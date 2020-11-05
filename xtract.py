@@ -1,13 +1,13 @@
 import process
 import os
 
-fnames = os.listdir("./task") #Create list of files in "Task" directory
+fnames = os.listdir("./task") #Create list of mediafiles to run script on
 
-fileSuffix = "TRIM_" #Suffix to put at beginning of output names
+file_suffix = "TRIM_" #Prefix to put at beginning of output filename
 
 
 
 for fname in fnames:
-    splitName = fname.split('.')
-    outputName = fileSuffix + splitName[0] + ".mp3"
-    process.run_xtract(fname, outputName)
+    split_name = fname.split('.')
+    output_name = file_suffix + split_name[0] + ".mp3"
+    process.run_xtract(fname, output_name)
