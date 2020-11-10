@@ -8,6 +8,9 @@ from moviepy.editor import *
 #Buffer between subclips, in milliseconds
 subclip_buffer = 1500
 
+#Buffer before subtitle time starts, in milliseconds
+before_buffer = 250
+
 #Buffer after subtitle time ends, in milliseconds
 after_buffer = 250
 
@@ -22,6 +25,17 @@ fadein_duration = 50
 temp = 'temp.srt'
 
 #Process subtitle file
+
+def get_timeinsecs(timestamp):
+    unconverted_time = [int(timestamp[:2]), int(timestamp[3:5]), int(timestamp[6:8]), int(timestamp[9:12])]
+    timeinsecs = (unconverted_time[0]*3600) + (unconverted_time[1]*60) + unconverted_time[2] + (unconverted_time[3]/1000)
+    return timeinsecs
+
+def update_times(start_time, end_time):
+    a = get_timeinsecs(start_time)
+    b = get_timeinsecs(end_time)
+    return [a,b]
+
 
 def run_xtract(fname, oname):
 
@@ -42,15 +56,7 @@ def run_xtract(fname, oname):
 
     fhandle = open(temp)
 
-    def get_timeinsecs(timestamp):
-        unconverted_time = [int(timestamp[:2]), int(timestamp[3:5]), int(timestamp[6:8]), int(timestamp[9:12])]
-        timeinsecs = (unconverted_time[0]*3600) + (unconverted_time[1]*60) + unconverted_time[2] + (unconverted_time[3]/1000)
-        return timeinsecs
 
-    def update_times(start_time, end_time):
-        a = get_timeinsecs(start_time)
-        b = get_timeinsecs(end_time)
-        return [a,b]
 
     desired_subclip_times = list()
 
@@ -73,6 +79,7 @@ def run_xtract(fname, oname):
 
         else:
             current_times[1] = current_times[1] + (after_buffer / 1000)
+            current_times[0] = current_times[0] - (before_buffer / 1000)
             desired_subclip_times.append(current_times)
             current_times = [new_start_time, new_end_time]
 
