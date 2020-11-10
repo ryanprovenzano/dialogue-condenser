@@ -14,9 +14,6 @@ with open("settings.conf") as f:
                 break
             file_suffix = conf_value
 
-
-
-
 for fname in fnames:
     split_name = fname.split('.')
     output_name = file_suffix + split_name[0] + ".mp3"
