@@ -9,7 +9,7 @@ from moviepy.editor import *
 subclip_buffer = 1500
 
 #Buffer before subtitle time starts, in milliseconds
-before_buffer = 250
+before_buffer = 800
 
 #Buffer after subtitle time ends, in milliseconds
 after_buffer = 250
