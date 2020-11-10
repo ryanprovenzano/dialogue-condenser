@@ -3,7 +3,17 @@ import os
 
 fnames = os.listdir("./task") #Create list of mediafiles to run script on
 
-file_suffix = "TRIM_" #Prefix to put at beginning of output filename
+file_suffix = "TRIM_" #Default prefix to put at beginning of output filename
+
+with open("settings.conf") as f:
+    for line in f:
+        if "file_suffix" in line:
+            pos = line.find("=")
+            conf_value = line[pos+1:].strip()
+            if conf_value == "default":
+                break
+            file_suffix = conf_value
+
 
 
 
