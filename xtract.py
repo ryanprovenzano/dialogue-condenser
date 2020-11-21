@@ -1,7 +1,7 @@
-import process
-import os
+from package1 import process
 
-fnames = os.listdir("./task") #Create list of mediafiles to run script on
+
+fnames = process.os.listdir("./task") #Create list of mediafiles to run script on
 
 file_suffix = "TRIM_" #Default prefix to put at beginning of output filename
 
