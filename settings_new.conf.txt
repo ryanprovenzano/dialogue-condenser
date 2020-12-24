@@ -1,0 +1,16 @@
+[DEFAULT]
+FileSuffix = default
+SubtitleStartPadding = -250
+SubtitleEndPadding = 250
+GapTriggerA = 2500
+FadeOutDurationA = 250
+FadeInDurationA = 50
+
+
+
+
+
+
+
+
+
