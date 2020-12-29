@@ -77,7 +77,7 @@ def run_xtract(fname, oname):
 
             else:
 
-                for i in range(len(interval_list)):
+                for i in range(len(loadsettings.interval_list)):
 
                     if new_start_time - current_times[1] > loadsettings.interval_list[i]:
 
