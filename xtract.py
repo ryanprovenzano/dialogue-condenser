@@ -1,20 +1,15 @@
-import process
 import os
 
-fnames = os.listdir("./task") #Create list of mediafiles to run script on
+import process_v2
+import loadsettings
 
-file_suffix = "TRIM_" #Default prefix to put at beginning of output filename
+fnames = os.listdir("./task") #Create list of mediafiles to run through
 
-with open("settings.conf") as f:
-    for line in f:
-        if "file_suffix" in line:
-            pos = line.find("=")
-            conf_value = line[pos+1:].strip()
-            if conf_value == "default":
-                break
-            file_suffix = conf_value
+def strip_filename_extension(string):
+    temp = string.split('.')
+    return temp[0]
 
 for fname in fnames:
-    split_name = fname.split('.')
-    output_name = file_suffix + split_name[0] + ".mp3"
-    process.run_xtract(fname, output_name)
+    fname = strip_filename_extension(fname)
+    output_name = loadsettings.file_suffix + fname + ".mp3"
+    process_v2.run_xtract(fname, output_name)
