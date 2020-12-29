@@ -11,5 +11,5 @@ def strip_filename_extension(string):
 
 for filename in filenames:
     stripped_filename = strip_filename_extension(filename)
-    output_name = loadsettings.file_suffix + filename + ".mp3"
+    output_name = loadsettings.file_suffix + stripped_filename + ".mp3"
     process_v2.run_xtract(filename, output_name)

@@ -54,8 +54,6 @@ def run_xtract(fname, oname):
     #Read timestamps from file and prepare subclip start/end times
     with open("temp.srt") as fhandle:
 
-        desired_subclip_times = list()
-
         subclip_store = list()
 
         current_times = [None, None]
@@ -68,6 +66,7 @@ def run_xtract(fname, oname):
 
             new_start_time, new_end_time = update_times(words[0], words[2])
 
+
             if current_times[0] is None:
                 current_times = [new_start_time, new_end_time]
                 continue
@@ -76,25 +75,25 @@ def run_xtract(fname, oname):
                 current_times[1] = new_end_time
 
             else:
-
                 for i in range(len(loadsettings.interval_list)):
 
-                    if new_start_time - current_times[1] > loadsettings.interval_list[i]:
+                    if new_start_time - current_times[1] > loadsettings.interval_list[i] / 1000:
 
-                        current_interval = loadsettings.config[loadsettings.interval_list[i]]
+                        current_section_key = loadsettings.revert_to_string(loadsettings.interval_list[i])
+                        current_interval = loadsettings.config[current_section_key]
 
-                        current_times[0] = current_times[0] - (current_interval['SubclipStartPadding'] / 1000)
-                        current_times[1] = current_times[1] + (current_interval['SubclipEndPadding'] / 1000)
+                        current_times[0] = current_times[0] - (current_interval.getint('SubclipStartPadding') / 1000)
+                        current_times[1] = current_times[1] + (current_interval.getint('SubclipEndPadding') / 1000)
 
                         editedclip = (audio_clip.subclip(current_times[0],current_times[1])
-                                .audio_fadein(current_interval['FadeInDuration'] / 1000)
-                                .audio_fadeout(current_interval['FadeOutDuration'] / 1000))
+                                .audio_fadein(current_interval.getint('FadeInDuration') / 1000)
+                                .audio_fadeout(current_interval.getint('FadeOutDuration') / 1000))
                         subclip_store.append(editedclip)
                         current_times = [new_start_time, new_end_time] #Prepare for next loop
                         break
 
         # Preparation of subclips complete
-
+    print(subclip_store)
     concat = concatenate_audioclips(subclip_store)
     concat.write_audiofile(oname)
     audio_clip.close()
