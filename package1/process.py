@@ -5,7 +5,6 @@ from moviepy.editor import *
 
 import package1.loadsettings as loadsettings
 
-
 #Functions to perform operations on timestamps
 def get_timeinsecs(timestamp):
     unconverted_time = [int(timestamp[:2]), int(timestamp[3:5]), int(timestamp[6:8]), int(timestamp[9:12])]
@@ -20,11 +19,12 @@ def update_times(start_time, end_time):
 
 #Defining the main process of the program.
 
-def run_condenser(fname, oname):
 
+def run_condenser(fname, oname, first_file_bool):
     #Selecting the audiotrack we want to extract
-    while True:
+    while first_file_bool:
         try:
+            global desired_audiotrack
             desired_audiotrack = int(input("Enter desired audiotrack (usually 0): "))
             break
         except:
@@ -34,7 +34,7 @@ def run_condenser(fname, oname):
     (
         ffmpeg
         .input('./task/' + fname)
-        .output("temp.srt")
+        .output("temp_.srt")
         .run(overwrite_output = True)
     )
     #Exporting audio from the media when our desired audiotrack is not the first
@@ -42,7 +42,13 @@ def run_condenser(fname, oname):
         in1 = ffmpeg.input('./task/' + fname)
         temp_ffmpeg_filename = "temp_" + fname
         out = ffmpeg.output(in1, temp_ffmpeg_filename, codec = "copy", map =f"0:a:{desired_audiotrack}")
-        out.run(overwrite_output = True)
+        try:
+            out.run(overwrite_output = True)
+        except:
+            print(f"\nThere is no {desired_audiotrack}'th audiotrack. Defaulting to the 0'th audiotrack.\n")
+            desired_audiotrack = 0 #Specified audiotrack didn't exist, change value to 0 and restart
+            #out = ffmpeg.output(in1, temp_ffmpeg_filename, codec = "copy", map =f"0:a:{desired_audiotrack}")
+            #out.run(overwrite_output = True)
 
 
     #Load in video file; The file we load from depends on which audiotrack was selected by the user
@@ -52,7 +58,7 @@ def run_condenser(fname, oname):
         audio_clip = (AudioFileClip(temp_ffmpeg_filename))
 
     #Read timestamps from file and prepare subclip start/end times
-    with open("temp.srt") as fhandle:
+    with open("temp_.srt") as fhandle:
 
         subclip_store = list()
 
@@ -98,6 +104,9 @@ def run_condenser(fname, oname):
     audio_clip.close()
 
     #Delete temp files
-    os.remove("temp.srt")
-    if desired_audiotrack != 0:
-        os.remove(temp_ffmpeg_filename)
+    filenames = os.listdir()
+    for file in filenames:
+        if file.startswith("temp_"):
+            os.remove(file)
+    #if desired_audiotrack != 0:
+        #os.remove(temp_ffmpeg_filename)
