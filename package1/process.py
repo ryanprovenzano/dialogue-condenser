@@ -3,35 +3,8 @@ import os
 import ffmpeg
 from moviepy.editor import *
 
+import package1.loadsettings as loadsettings
 
-#Creates dictionary from settings.conf, then grabs the values
-config_dict = dict()
-
-with open("settings.conf") as f:
-    for line in f:
-        if "=" not in line:
-            continue
-        line = line.split("=")
-        key, value = line[0].strip(), line[1].strip()
-        config_dict[key] = value
-
-
-#Buffer between subclips, in milliseconds
-subclip_buffer = int(config_dict.get("subclip_buffer"))
-
-#Buffer before subtitle time starts, in milliseconds
-before_buffer = int(config_dict.get("before_buffer"))
-
-#Buffer after subtitle time ends, in milliseconds
-after_buffer = int(config_dict.get("after_buffer"))
-
-#Fade after each subclip, in milliseconds
-fadeout_duration = int(config_dict.get("fadeout_duration"))
-
-#Fade in the beginning of a subclip, in milliseconds
-fadein_duration = int(config_dict.get("fadein_duration"))
-
-#################################################################################
 
 #Functions to perform operations on timestamps
 def get_timeinsecs(timestamp):
@@ -45,13 +18,11 @@ def update_times(start_time, end_time):
     return [a,b]
 
 
-#############################################################################################
+#Defining the main process of the program.
 
-#Main process
+def run_condenser(fname, oname):
 
-def run_xtract(fname, oname):
-
-    #Selecting the audiotrack we want to work with
+    #Selecting the audiotrack we want to extract
     while True:
         try:
             desired_audiotrack = int(input("Enter desired audiotrack (usually 0): "))
@@ -59,14 +30,14 @@ def run_xtract(fname, oname):
         except:
             print("ERROR: Enter the audiotrack number in numeral form (1, 2, 3, 4, etc.)\n")
 
-    #Extract subtitle file from the videofile
+    #Extract subtitle from the mediafile
     (
         ffmpeg
         .input('./task/' + fname)
         .output("temp.srt")
         .run(overwrite_output = True)
     )
-    #Exporting audio from the media when our selected audiotrack is not the first (0'th)
+    #Exporting audio from the media when our desired audiotrack is not the first
     if desired_audiotrack != 0:
         in1 = ffmpeg.input('./task/' + fname)
         temp_ffmpeg_filename = "temp_" + fname
@@ -74,10 +45,16 @@ def run_xtract(fname, oname):
         out.run(overwrite_output = True)
 
 
+    #Load in video file; The file we load from depends on which audiotrack was selected by the user
+    if desired_audiotrack == 0:             #
+        audio_clip = (AudioFileClip('./task/' + fname))
+    else:
+        audio_clip = (AudioFileClip(temp_ffmpeg_filename))
+
     #Read timestamps from file and prepare subclip start/end times
     with open("temp.srt") as fhandle:
 
-        desired_subclip_times = list()
+        subclip_store = list()
 
         current_times = [None, None]
 
@@ -89,37 +66,33 @@ def run_xtract(fname, oname):
 
             new_start_time, new_end_time = update_times(words[0], words[2])
 
+
             if current_times[0] is None:
                 current_times = [new_start_time, new_end_time]
                 continue
 
-            if (new_start_time - current_times[1] < (subclip_buffer / 1000)):
+            if (new_start_time - current_times[1] < (loadsettings.interval_list_min / 1000)):
                 current_times[1] = new_end_time
 
             else:
-                current_times[1] = current_times[1] + (after_buffer / 1000)
-                current_times[0] = current_times[0] - (before_buffer / 1000)
-                desired_subclip_times.append(current_times)
-                current_times = [new_start_time, new_end_time]
+                for i in range(len(loadsettings.interval_list)):
 
+                    if new_start_time - current_times[1] > loadsettings.interval_list[i] / 1000:
 
-    #Load, edit audio subclips, then export
+                        current_section_key = loadsettings.revert_to_string(loadsettings.interval_list[i])
+                        current_interval = loadsettings.config[current_section_key]
 
+                        current_times[0] = current_times[0] - (current_interval.getint('SubclipStartPadding') / 1000)
+                        current_times[1] = current_times[1] + (current_interval.getint('SubclipEndPadding') / 1000)
 
-    subclip_store = list()
+                        editedclip = (audio_clip.subclip(current_times[0],current_times[1])
+                                .audio_fadein(current_interval.getint('FadeInDuration') / 1000)
+                                .audio_fadeout(current_interval.getint('FadeOutDuration') / 1000))
+                        subclip_store.append(editedclip)
+                        current_times = [new_start_time, new_end_time] #Prepare for next loop
+                        break
 
-    #The file we load from depends on which audiotrack was selected by the user
-    if desired_audiotrack == 0:
-        audio_clip = (AudioFileClip('./task/' + fname))
-    else:
-        audio_clip = (AudioFileClip(temp_ffmpeg_filename))
-
-    for clip in desired_subclip_times:
-        editedclip = (audio_clip.subclip(clip[0],clip[1])
-                .audio_fadein(fadein_duration / 1000)
-                .audio_fadeout(fadeout_duration / 1000))
-        subclip_store.append(editedclip)
-
+        # Preparation of subclips complete
     concat = concatenate_audioclips(subclip_store)
     concat.write_audiofile(oname)
     audio_clip.close()
