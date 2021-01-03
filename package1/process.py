@@ -81,11 +81,11 @@ def run_condenser(fname, oname, first_file_bool):
                 current_times[1] = new_end_time
 
             else:
-                for i in range(len(loadsettings.interval_list)):
+                for i in range(len(loadsettings.interval_list_ints)):
 
-                    if new_start_time - current_times[1] > loadsettings.interval_list[i] / 1000:
+                    if new_start_time - current_times[1] > loadsettings.interval_list_ints[i] / 1000:
 
-                        current_section_key = loadsettings.revert_to_string(loadsettings.interval_list[i])
+                        current_section_key = loadsettings.revert_to_string(loadsettings.interval_list_ints[i])
                         current_interval = loadsettings.config[current_section_key]
 
                         current_times[0] = current_times[0] - (current_interval.getint('SubclipStartPadding') / 1000)
@@ -108,5 +108,3 @@ def run_condenser(fname, oname, first_file_bool):
     for file in filenames:
         if file.startswith("temp_"):
             os.remove(file)
-    #if desired_audiotrack != 0:
-        #os.remove(temp_ffmpeg_filename)

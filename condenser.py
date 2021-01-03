@@ -17,9 +17,8 @@ def strip_filename_extension(string):
     return temp[0]
 
 first_file = True #Certain operations need to be performed for the first file of a batch only.
-
 for filename in filenames:
     stripped_filename = strip_filename_extension(filename)
-    output_name = loadsettings.file_suffix + stripped_filename + ".mp3"
+    output_name = loadsettings.file_prefix + stripped_filename + ".mp3"
     process.run_condenser(filename, output_name, first_file)
     first_file = False
