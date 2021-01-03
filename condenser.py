@@ -8,6 +8,10 @@ if filenames == []:
     print( "\nERROR: Task folder is empty. Put in video file(s) that you want to condense." )
     quit()
 
+if 'deletethis.txt' in filenames:
+    print("\nYou need to delete the file 'deletethis' in the 'condenser\Task' directory before the program can run.")
+    quit()
+
 def strip_filename_extension(string):
     temp = string.split('.')
     return temp[0]
