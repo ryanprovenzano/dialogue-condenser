@@ -55,7 +55,7 @@ For example, if the amount of silence was greater than 2500 ms, but less than 50
 
 In other words, the program will try to apply the settings that belong to the selection with the largest specified ms value. If it can't (because the amount of silence is too short), it will try the next largest section.
 
-This allows us to basically have custom fade-in amounts based on the amount of silence preceding any dialogue. This can be used to suggest a significant scene change (currently it's configured so that longer fadeins mean the media scene (movie scenes!) has probably changed)
+This allows us to basically have custom fade-in amounts based on the amount of silence preceding any dialogue. This can be used to suggest a significant scene change (currently it's configured so that longer fadeins mean the scene from your media file has probably just changed)
 
 If you want to add new sections or change them, just make a new line containing an amount of milliseconds  wrapped by []. [1500ms], [2000ms], and [3000ms] are all valid section titles. And then simply put the options underneath that title that you want to be applied.
 
