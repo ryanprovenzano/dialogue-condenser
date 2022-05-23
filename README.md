@@ -31,17 +31,17 @@ The output files from the program will appear in the condenser folder.
 
 By going into the settings.conf file, you can edit various aspects of the program output. Note: all the numbers in the options are given in milliseconds.
 
-FilePrefix can be changed to prefix your output files with the text of your choice. The default is TRIM_.
+**FilePrefix** can be changed to prefix your output files with the text of your choice. The default is TRIM_.
 
-SubclipStartPadding and SubclipEndPadding will lengthen the audio segments. The audio segments are just what the program detects to be dialogue, and is found from the subtitle timings.
+**SubclipStartPadding** and **SubclipEndPadding** will lengthen the audio segments. The audio segments are just what the program detects to be dialogue, and is found from the subtitle timings.
 
-SubclipStartPadding adds the audio that precedes the original start of a segment. For example, setting this option to 400 will add 400 milliseconds of audio.
+**SubclipStartPadding** adds the audio that precedes the original start of a segment. For example, setting this option to 400 will add 400 milliseconds of audio.
 
-SubclipEndPadding does the same, but instead adds the audio that came after the original segment.
+**SubclipEndPadding** does the same, but instead adds the audio that came after the original segment.
 
-FadeOutDuration and FadeInDuration work a little bit differently. They add fade-in and fade-out FX to the audio segment without changing the timing. This means it is possible to ruin the dialogue comprehensibility by setting these to absurdly large numbers.
+**FadeOutDuration** and **FadeInDuration** work a little bit differently. They add fade-in and fade-out FX to the audio segment without changing the timing. This means it is possible to ruin the dialogue comprehensibility by setting these to absurdly large numbers.
 
-As you can see in the original settings, there are three different section titles (or whatever you want to call them): [DEFAULT], [2500ms], and [5000ms]. Do not get rid of the [DEFAULT] title. 
+As you can see in the original settings, there are three different section titles (or whatever you want to call them): **[DEFAULT]**, **[2500ms]**, and **[5000ms]**. **Do not** get rid of the **[DEFAULT]** title. 
 
 Basically, whatever is immediately under the DEFAULT section (i.e. until another section title) gets applied unless it's overwritten.
 
