@@ -58,7 +58,7 @@ def run_condenser(fname, oname, first_file_bool):
         audio_clip = (AudioFileClip(temp_ffmpeg_filename))
 
     #Read timestamps from file and prepare subclip start/end times
-    with open("temp_.srt") as fhandle:
+    with open("temp_.srt", encoding='utf-8') as fhandle:
 
         subclip_store = list()
 
